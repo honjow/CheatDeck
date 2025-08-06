@@ -145,7 +145,7 @@ const Advanced: FC<{ appid: number }> = ({ appid }) => {
         label="Lossless Scaling"
         description={t(
           "ADVANCED_LOSSLESS_SCALING_DESC",
-          "Enable lossless scaling for the game",
+          "Enable Lossless Scaling for the game (requires the Lossless-Scaling plugin)",
         )}
         bottomSeparator="standard"
         checked={options.hasKey("~/lsfg")}
@@ -164,7 +164,7 @@ const Advanced: FC<{ appid: number }> = ({ appid }) => {
         label="Decky Framegen Patch"
         description={t(
           "ADVANCED_DECKY_FRAMEGEN_PATCH_DESC",
-          "Patch the game to use Decky Framegen",
+          "Patch the game to use Decky Framegen (requires the Decky-Framegen plugin)",
         )}
         bottomSeparator="standard"
         checked={options.hasKey("~/fgmod/fgmod")}
@@ -183,7 +183,7 @@ const Advanced: FC<{ appid: number }> = ({ appid }) => {
         label="Decky Framegen Unpatch"
         description={t(
           "ADVANCED_DECKY_FRAMEGEN_UNPATCH_DESC",
-          "Unpatch the game for Decky Framegen",
+          "Unpatch the game for Decky Framegen (requires the Decky-Framegen plugin)",
         )}
         bottomSeparator="standard"
         checked={options.hasKey("~/fgmod/fgmod-uninstaller.sh")}

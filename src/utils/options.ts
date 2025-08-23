@@ -187,9 +187,35 @@ export class Options {
     return param?.value;
   }
 
+  private isAlreadyQuoted(value: string): boolean {
+    const len = value.length;
+    if (len < 2) return false;
+    
+    // Check if wrapped in double quotes
+    if (value[0] === '"' && value[len - 1] === '"') {
+      // Make sure the closing quote is not escaped
+      let escapeCount = 0;
+      for (let i = len - 2; i >= 0 && value[i] === '\\'; i--) {
+        escapeCount++;
+      }
+      if (escapeCount % 2 === 0) return true; // Even number of backslashes = not escaped
+    }
+    
+    // Check if wrapped in single quotes
+    if (value[0] === "'" && value[len - 1] === "'") {
+      // Single quotes don't need escape checking in most shells
+      return true;
+    }
+    
+    return false;
+  }
+
   private needsQuotes(value: string): boolean {
     // Empty or undefined values need quotes
     if (!value) return true;
+    
+    // If already properly quoted, don't add more quotes
+    if (this.isAlreadyQuoted(value)) return false;
     
     // Check each character, properly handling escape sequences
     let i = 0;

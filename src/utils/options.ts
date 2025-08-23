@@ -187,9 +187,46 @@ export class Options {
     return param?.value;
   }
 
+  private needsQuotes(value: string): boolean {
+    // Empty or undefined values need quotes
+    if (!value) return true;
+    
+    // Check each character, properly handling escape sequences
+    let i = 0;
+    while (i < value.length) {
+      const char = value[i];
+      
+      // Handle backslash escape sequences
+      if (char === '\\') {
+        if (i + 1 < value.length) {
+          // Skip escape sequence (backslash + escaped character)
+          i += 2;
+        } else {
+          // Trailing backslash at end, conservative approach - needs quotes
+          return true;
+        }
+        continue;
+      }
+      
+      // Check for unescaped dangerous characters
+      if (/[\s!"#$%&'()*+,;<=>?@[\]^`{|}~]/.test(char)) {
+        return true;
+      }
+      
+      i++;
+    }
+    
+    return false;
+  }
+
   getOptionsString(): string {
     const envString = this.#parsedParams.filter(param => param.type === "env")
-      .map(param => `${param.key}="${param.value}"`);
+      .map(param => {
+        const value = param.value || "";
+        return this.needsQuotes(value) 
+          ? `${param.key}="${value}"` 
+          : `${param.key}=${value}`;
+      });
     const preCmdString = this.#parsedParams.filter(param => param.type === "pre_cmd")
       .map(param => param.key);
     const flagArgsString = this.#parsedParams.filter(param => param.type === "flag_args")

@@ -75,10 +75,10 @@ export class Options {
       i++;
     }
 
-    // Let's say all the rest is pre_cmd parameter, put them all in key
-    if (others.length > 0) {
-      params.push({ type: "pre_cmd", key: others.join(" ") });
-    }
+    // Each remaining token becomes an independent pre_cmd parameter
+    others.forEach(cmd => {
+      params.push({ type: "pre_cmd", key: cmd });
+    });
 
     return params;
   }
@@ -118,12 +118,7 @@ export class Options {
   }
 
   setParameter(param: ParsedParam): void {
-    if (param.type === "pre_cmd") {
-      // For pre_cmd, remove the whole pre_cmd type parameters
-      this.removeParamByType("pre_cmd");
-    } else {
-      this.removeParamByKey(param.key);
-    }
+    this.removeParamByKey(param.key);
     this.#parsedParams.push(param);
   }
 

@@ -88,10 +88,50 @@ export class Options {
     let current = "";
     let inQuotes = false;
     let quoteChar = "";
+    let i = 0;
 
-    for (let i = 0; i < text.length; i++) {
+    while (i < text.length) {
       const char = text[i];
+      const nextChar = text[i + 1];
 
+      // Handle escape sequences
+      if (char === "\\") {
+        if (inQuotes && quoteChar === "'") {
+          // In single quotes, backslash is literal
+          current += char;
+          i++;
+        } else if (nextChar !== undefined) {
+          // Escape the next character
+          if (inQuotes && quoteChar === "\"") {
+            // In double quotes, only escape " and \
+            if (nextChar === "\"" || nextChar === "\\") {
+              current += nextChar;
+              i += 2;
+            } else {
+              current += char;
+              i++;
+            }
+          } else if (!inQuotes) {
+            // Outside quotes, escape any special character
+            if (nextChar === " " || nextChar === "\"" || nextChar === "'" || nextChar === "\\") {
+              current += nextChar;
+              i += 2;
+            } else {
+              current += char;
+              i++;
+            }
+          } else {
+            current += char;
+            i++;
+          }
+        } else {
+          current += char;
+          i++;
+        }
+        continue;
+      }
+
+      // Handle quotes
       if ((char === "\"" || char === "'") && !inQuotes) {
         inQuotes = true;
         quoteChar = char;
@@ -99,7 +139,9 @@ export class Options {
       } else if (char === quoteChar && inQuotes) {
         inQuotes = false;
         current += char;
+        quoteChar = "";
       } else if (char === " " && !inQuotes) {
+        // Space separator (only outside quotes)
         if (current.trim()) {
           tokens.push(current.trim());
           current = "";
@@ -107,6 +149,8 @@ export class Options {
       } else {
         current += char;
       }
+
+      i++;
     }
 
     if (current.trim()) tokens.push(current.trim());
